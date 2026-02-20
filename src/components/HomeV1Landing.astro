@@ -1,0 +1,273 @@
+---
+interface Props {
+	brandHref?: string;
+}
+
+const { brandHref = '/' } = Astro.props;
+---
+
+<div class="home-v1-page">
+	<nav class="home-v1-nav">
+		<a class="home-v1-brand" href={brandHref} aria-label="Hyoka home">
+			<span class="home-v1-brand-mark" aria-hidden="true"></span>
+			<span>Hyoka</span>
+		</a>
+
+		<div class="home-v1-nav-actions">
+			<a class="home-v1-signin" href="/login">Sign In</a>
+			<a class="home-v1-join" href="/waitlist">Join Waitlist</a>
+		</div>
+	</nav>
+
+	<main class="home-v1-main">
+		<div class="home-v1-shell">
+			<h1 class="home-v1-headline">
+				DATA<br />
+				DRIVEN<br />
+				<span>TRUTH.</span>
+			</h1>
+
+			<div class="home-v1-bottom">
+				<p class="home-v1-subtitle">
+					Stop relying on "vibes". Use Hyoka to mathematically prove your AI model&apos;s
+					performance and cost-efficiency.
+				</p>
+
+				<form class="home-v1-form" action="/waitlist" method="get">
+					<label class="sr-only" for="waitlist-email">Email Address</label>
+					<input
+						id="waitlist-email"
+						name="email"
+						type="email"
+						placeholder="Email Address"
+						autocomplete="email"
+						required
+					/>
+					<button type="submit" aria-label="Join waitlist">→</button>
+				</form>
+			</div>
+		</div>
+	</main>
+</div>
+
+<style>
+	:global(body.home-v1-body) {
+		margin: 0;
+		background: #fff;
+		color: #14233c;
+		font-family: 'Atkinson', 'Avenir Next', 'Segoe UI', sans-serif;
+		font-size: 16px;
+		line-height: 1.4;
+	}
+
+	.home-v1-page {
+		--hyoka-navy: #14233c;
+		--hyoka-orange: #ff4d4d;
+		min-height: 100vh;
+		color: var(--hyoka-navy);
+		background: #fff;
+		display: flex;
+		flex-direction: column;
+		position: relative;
+		overflow: hidden;
+	}
+
+	.home-v1-nav {
+		padding: 40px 60px;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 24px;
+	}
+
+	.home-v1-brand {
+		display: inline-flex;
+		align-items: center;
+		gap: 12px;
+		font-size: 24px;
+		font-weight: 900;
+		letter-spacing: -0.02em;
+		color: var(--hyoka-navy);
+		text-decoration: none;
+	}
+
+	.home-v1-brand-mark {
+		width: 32px;
+		height: 32px;
+		background: var(--hyoka-navy);
+		border-radius: 8px;
+		display: inline-block;
+	}
+
+	.home-v1-nav-actions {
+		display: flex;
+		gap: 16px;
+		align-items: center;
+	}
+
+	.home-v1-signin {
+		color: var(--hyoka-navy);
+		text-decoration: none;
+		font-weight: 700;
+	}
+
+	.home-v1-signin:hover {
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+
+	.home-v1-join {
+		background: var(--hyoka-navy);
+		color: #fff;
+		border: none;
+		padding: 12px 24px;
+		border-radius: 8px;
+		font-weight: 700;
+		text-decoration: none;
+		transition: transform 0.15s ease, filter 0.15s ease;
+	}
+
+	.home-v1-join:hover {
+		transform: translateY(-1px);
+		filter: brightness(1.1);
+	}
+
+	.home-v1-main {
+		flex: 1;
+		width: 100%;
+		max-width: none;
+		margin: 0;
+		padding: 0 60px 48px;
+		display: flex;
+		align-items: center;
+	}
+
+	.home-v1-shell {
+		width: 100%;
+		max-width: 1400px;
+	}
+
+	.home-v1-headline {
+		font-size: clamp(72px, 12vw, 180px);
+		font-weight: 900;
+		line-height: 0.85;
+		margin: 0 0 40px;
+		letter-spacing: -0.05em;
+		color: var(--hyoka-navy);
+	}
+
+	.home-v1-headline span {
+		color: var(--hyoka-orange);
+	}
+
+	.home-v1-bottom {
+		display: flex;
+		align-items: flex-end;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		gap: 40px;
+	}
+
+	.home-v1-subtitle {
+		font-size: 24px;
+		color: #666;
+		max-width: 500px;
+		line-height: 1.4;
+		font-weight: 500;
+		margin: 0;
+	}
+
+	.home-v1-form {
+		display: flex;
+		gap: 16px;
+		width: 100%;
+		max-width: 500px;
+	}
+
+	.home-v1-form input {
+		flex: 1;
+		border: 2px solid var(--hyoka-navy);
+		padding: 20px;
+		font-size: 18px;
+		border-radius: 0;
+		outline: none;
+		font-family: inherit;
+	}
+
+	.home-v1-form input:focus-visible {
+		box-shadow: 0 0 0 4px rgba(20, 35, 60, 0.18);
+	}
+
+	.home-v1-form button {
+		background: var(--hyoka-orange);
+		color: #fff;
+		border: none;
+		padding: 0 40px;
+		font-size: 18px;
+		font-weight: 700;
+		cursor: pointer;
+		line-height: 1;
+		transition: transform 0.15s ease, filter 0.15s ease;
+	}
+
+	.home-v1-form button:hover {
+		transform: translateY(-1px);
+		filter: brightness(1.08);
+	}
+
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
+	}
+
+	@media (max-width: 960px) {
+		.home-v1-nav {
+			padding: 28px 28px 16px;
+			flex-wrap: wrap;
+		}
+
+		.home-v1-main {
+			padding: 8px 28px 40px;
+		}
+
+		.home-v1-headline {
+			font-size: clamp(52px, 18vw, 112px);
+			line-height: 0.88;
+			margin-bottom: 28px;
+		}
+
+		.home-v1-subtitle {
+			font-size: 20px;
+			max-width: 100%;
+		}
+	}
+
+	@media (max-width: 640px) {
+		.home-v1-nav-actions {
+			width: 100%;
+			justify-content: space-between;
+		}
+
+		.home-v1-form {
+			max-width: 100%;
+			gap: 10px;
+		}
+
+		.home-v1-form input {
+			padding: 16px;
+			font-size: 16px;
+		}
+
+		.home-v1-form button {
+			padding: 0 24px;
+			font-size: 16px;
+		}
+	}
+</style>
