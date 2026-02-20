@@ -1,9 +1,29 @@
 ---
 interface Props {
 	brandHref?: string;
+	sourcePath?: string;
+	joined?: boolean;
+	errorCode?: string | null;
 }
 
-const { brandHref = '/' } = Astro.props;
+const {
+	brandHref = '/',
+	sourcePath = '/',
+	joined = false,
+	errorCode = null,
+} = Astro.props;
+
+const errorMessages: Record<string, string> = {
+	invalid_email: 'Please enter a valid email address.',
+	email_not_configured: 'Waitlist signup is temporarily unavailable. Please try again shortly.',
+	delivery_failed: 'Could not submit your email right now. Please try again.',
+};
+
+const feedbackMessage = joined
+	? "Thanks, you're on the waitlist. We'll be in touch soon."
+	: errorCode
+		? (errorMessages[errorCode] ?? 'Could not submit your email. Please try again.')
+		: null;
 ---
 
 <div class="home-v1-page">
@@ -14,8 +34,7 @@ const { brandHref = '/' } = Astro.props;
 		</a>
 
 		<div class="home-v1-nav-actions">
-			<a class="home-v1-signin" href="/login">Sign In</a>
-			<a class="home-v1-join" href="/waitlist">Join Waitlist</a>
+			<a class="home-v1-join" href="#waitlist-signup">Join Waitlist</a>
 		</div>
 	</nav>
 
@@ -33,8 +52,9 @@ const { brandHref = '/' } = Astro.props;
 					performance and cost-efficiency.
 				</p>
 
-				<form class="home-v1-form" action="/waitlist" method="get">
+				<form class="home-v1-form" id="waitlist-signup" action="/api/waitlist" method="post">
 					<label class="sr-only" for="waitlist-email">Email Address</label>
+					<input type="hidden" name="sourcePath" value={sourcePath} />
 					<input
 						id="waitlist-email"
 						name="email"
@@ -45,6 +65,14 @@ const { brandHref = '/' } = Astro.props;
 					/>
 					<button type="submit" aria-label="Join waitlist">→</button>
 				</form>
+
+				{
+					feedbackMessage && (
+						<p class:list={['home-v1-feedback', joined ? 'is-success' : 'is-error']} role="status">
+							{feedbackMessage}
+						</p>
+					)
+				}
 			</div>
 		</div>
 	</main>
@@ -55,7 +83,8 @@ const { brandHref = '/' } = Astro.props;
 		margin: 0;
 		background: #fff;
 		color: #14233c;
-		font-family: 'Atkinson', 'Avenir Next', 'Segoe UI', sans-serif;
+		font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial,
+			sans-serif;
 		font-size: 16px;
 		line-height: 1.4;
 	}
@@ -101,19 +130,8 @@ const { brandHref = '/' } = Astro.props;
 
 	.home-v1-nav-actions {
 		display: flex;
-		gap: 16px;
+		gap: 12px;
 		align-items: center;
-	}
-
-	.home-v1-signin {
-		color: var(--hyoka-navy);
-		text-decoration: none;
-		font-weight: 700;
-	}
-
-	.home-v1-signin:hover {
-		text-decoration: underline;
-		text-underline-offset: 3px;
 	}
 
 	.home-v1-join {
@@ -130,6 +148,11 @@ const { brandHref = '/' } = Astro.props;
 	.home-v1-join:hover {
 		transform: translateY(-1px);
 		filter: brightness(1.1);
+	}
+
+	.home-v1-join:focus-visible {
+		outline: 3px solid rgba(20, 35, 60, 0.25);
+		outline-offset: 2px;
 	}
 
 	.home-v1-main {
@@ -182,6 +205,7 @@ const { brandHref = '/' } = Astro.props;
 		gap: 16px;
 		width: 100%;
 		max-width: 500px;
+		scroll-margin-top: 32px;
 	}
 
 	.home-v1-form input {
@@ -213,6 +237,27 @@ const { brandHref = '/' } = Astro.props;
 	.home-v1-form button:hover {
 		transform: translateY(-1px);
 		filter: brightness(1.08);
+	}
+
+	.home-v1-form button:focus-visible {
+		outline: 3px solid rgba(255, 77, 77, 0.32);
+		outline-offset: 2px;
+	}
+
+	.home-v1-feedback {
+		width: 100%;
+		max-width: 500px;
+		margin: 12px 0 0;
+		font-size: 15px;
+		font-weight: 600;
+	}
+
+	.home-v1-feedback.is-success {
+		color: #1f7a45;
+	}
+
+	.home-v1-feedback.is-error {
+		color: #b32727;
 	}
 
 	.sr-only {
@@ -251,8 +296,7 @@ const { brandHref = '/' } = Astro.props;
 
 	@media (max-width: 640px) {
 		.home-v1-nav-actions {
-			width: 100%;
-			justify-content: space-between;
+			width: auto;
 		}
 
 		.home-v1-form {
