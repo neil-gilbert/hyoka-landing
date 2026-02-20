@@ -24,6 +24,8 @@ const feedbackMessage = joined
 	: errorCode
 		? (errorMessages[errorCode] ?? 'Could not submit your email. Please try again.')
 		: null;
+
+const modalTitle = joined ? 'Thanks for joining' : 'Waitlist signup error';
 ---
 
 <div class="home-v1-page">
@@ -32,10 +34,6 @@ const feedbackMessage = joined
 			<span class="home-v1-brand-mark" aria-hidden="true"></span>
 			<span>Hyoka</span>
 		</a>
-
-		<div class="home-v1-nav-actions">
-			<a class="home-v1-join" href="#waitlist-signup">Join Waitlist</a>
-		</div>
 	</nav>
 
 	<main class="home-v1-main">
@@ -52,30 +50,42 @@ const feedbackMessage = joined
 					performance and cost-efficiency.
 				</p>
 
-				<form class="home-v1-form" id="waitlist-signup" action="/api/waitlist" method="post">
-					<label class="sr-only" for="waitlist-email">Email Address</label>
-					<input type="hidden" name="sourcePath" value={sourcePath} />
-					<input
-						id="waitlist-email"
-						name="email"
-						type="email"
-						placeholder="Email Address"
-						autocomplete="email"
-						required
-					/>
-					<button type="submit" aria-label="Join waitlist">→</button>
-				</form>
-
-				{
-					feedbackMessage && (
-						<p class:list={['home-v1-feedback', joined ? 'is-success' : 'is-error']} role="status">
-							{feedbackMessage}
-						</p>
-					)
-				}
+				<div class="home-v1-cta">
+					<p class="home-v1-cta-title">Join Waitlist</p>
+					<form class="home-v1-form" id="waitlist-signup" action="/api/waitlist" method="post">
+						<label class="sr-only" for="waitlist-email">Email Address</label>
+						<input type="hidden" name="sourcePath" value={sourcePath} />
+						<input
+							id="waitlist-email"
+							name="email"
+							type="email"
+							placeholder="Email Address"
+							autocomplete="email"
+							required
+						/>
+						<button type="submit" aria-label="Join waitlist">→</button>
+					</form>
+				</div>
 			</div>
 		</div>
 	</main>
+
+	{
+		feedbackMessage && (
+			<div class="home-v1-modal-backdrop">
+				<section
+					class:list={['home-v1-modal', joined ? 'is-success' : 'is-error']}
+					role="dialog"
+					aria-modal="true"
+					aria-labelledby="waitlist-modal-title"
+				>
+					<h2 id="waitlist-modal-title">{modalTitle}</h2>
+					<p>{feedbackMessage}</p>
+					<a href={sourcePath} class="home-v1-modal-close">Close</a>
+				</section>
+			</div>
+		)
+	}
 </div>
 
 <style>
@@ -104,7 +114,7 @@ const feedbackMessage = joined
 	.home-v1-nav {
 		padding: 40px 60px;
 		display: flex;
-		justify-content: space-between;
+		justify-content: flex-start;
 		align-items: center;
 		gap: 24px;
 	}
@@ -126,33 +136,6 @@ const feedbackMessage = joined
 		background: var(--hyoka-navy);
 		border-radius: 8px;
 		display: inline-block;
-	}
-
-	.home-v1-nav-actions {
-		display: flex;
-		gap: 12px;
-		align-items: center;
-	}
-
-	.home-v1-join {
-		background: var(--hyoka-navy);
-		color: #fff;
-		border: none;
-		padding: 12px 24px;
-		border-radius: 8px;
-		font-weight: 700;
-		text-decoration: none;
-		transition: transform 0.15s ease, filter 0.15s ease;
-	}
-
-	.home-v1-join:hover {
-		transform: translateY(-1px);
-		filter: brightness(1.1);
-	}
-
-	.home-v1-join:focus-visible {
-		outline: 3px solid rgba(20, 35, 60, 0.25);
-		outline-offset: 2px;
 	}
 
 	.home-v1-main {
@@ -200,6 +183,19 @@ const feedbackMessage = joined
 		margin: 0;
 	}
 
+	.home-v1-cta {
+		width: 100%;
+		max-width: 500px;
+	}
+
+	.home-v1-cta-title {
+		margin: 0 0 10px;
+		font-size: 18px;
+		font-weight: 700;
+		letter-spacing: 0.01em;
+		color: var(--hyoka-navy);
+	}
+
 	.home-v1-form {
 		display: flex;
 		gap: 16px;
@@ -244,20 +240,61 @@ const feedbackMessage = joined
 		outline-offset: 2px;
 	}
 
-	.home-v1-feedback {
-		width: 100%;
-		max-width: 500px;
-		margin: 12px 0 0;
-		font-size: 15px;
-		font-weight: 600;
+	.home-v1-modal-backdrop {
+		position: fixed;
+		inset: 0;
+		padding: 24px;
+		background: rgba(20, 35, 60, 0.4);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 20;
 	}
 
-	.home-v1-feedback.is-success {
-		color: #1f7a45;
+	.home-v1-modal {
+		width: min(460px, 100%);
+		background: #fff;
+		color: var(--hyoka-navy);
+		border-radius: 16px;
+		padding: 24px;
+		box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 	}
 
-	.home-v1-feedback.is-error {
-		color: #b32727;
+	.home-v1-modal.is-success {
+		border-top: 6px solid #1f7a45;
+	}
+
+	.home-v1-modal.is-error {
+		border-top: 6px solid #b32727;
+	}
+
+	.home-v1-modal h2 {
+		margin: 0 0 10px;
+		font-size: 28px;
+		line-height: 1.1;
+	}
+
+	.home-v1-modal p {
+		margin: 0 0 20px;
+		font-size: 17px;
+		line-height: 1.5;
+		color: #3b4f73;
+	}
+
+	.home-v1-modal-close {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		background: var(--hyoka-navy);
+		color: #fff;
+		text-decoration: none;
+		padding: 11px 20px;
+		border-radius: 10px;
+		font-weight: 700;
+	}
+
+	.home-v1-modal-close:hover {
+		filter: brightness(1.1);
 	}
 
 	.sr-only {
@@ -295,10 +332,6 @@ const feedbackMessage = joined
 	}
 
 	@media (max-width: 640px) {
-		.home-v1-nav-actions {
-			width: auto;
-		}
-
 		.home-v1-form {
 			max-width: 100%;
 			gap: 10px;
