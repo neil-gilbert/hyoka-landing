@@ -1,6 +1,7 @@
 ---
 import BaseHead from '../components/BaseHead.astro';
 import HomeV1Landing from '../components/HomeV1Landing.astro';
+import { SITE_TITLE, SITE_URL } from '../consts';
 
 export const prerender = false;
 
@@ -9,18 +10,43 @@ const pageDescription =
 	'Stop relying on vibes. Use Hyoka to mathematically prove model performance and cost-efficiency.';
 const joined = Astro.url.searchParams.get('joined') === '1';
 const errorCode = Astro.url.searchParams.get('error');
+const organizationSchema = {
+	'@context': 'https://schema.org',
+	'@type': 'Organization',
+	name: SITE_TITLE,
+	url: SITE_URL,
+	logo: `${SITE_URL}/favicon.svg`,
+};
+const websiteSchema = {
+	'@context': 'https://schema.org',
+	'@type': 'WebSite',
+	name: SITE_TITLE,
+	url: SITE_URL,
+	description: pageDescription,
+};
+const softwareSchema = {
+	'@context': 'https://schema.org',
+	'@type': 'SoftwareApplication',
+	name: SITE_TITLE,
+	url: SITE_URL,
+	applicationCategory: 'DeveloperApplication',
+	operatingSystem: 'Web',
+	description: pageDescription,
+};
+const structuredData = JSON.stringify([organizationSchema, websiteSchema, softwareSchema]);
 ---
 
 <!doctype html>
 <html lang="en">
 	<head>
-		<BaseHead title={pageTitle} description={pageDescription} />
+		<BaseHead title={pageTitle} description={pageDescription} canonical="/" />
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
 			rel="stylesheet"
 			href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;900&display=swap"
 		/>
+		<script type="application/ld+json" set:html={structuredData}></script>
 	</head>
 	<body class="home-v1-body">
 		<HomeV1Landing brandHref="/" sourcePath="/" joined={joined} errorCode={errorCode} />

@@ -2,16 +2,29 @@
 // Import the global.css file here so that it is included on
 // all pages through the use of the <BaseHead /> component.
 import '../styles/global.css';
+import { SITE_TITLE, SITE_URL } from '../consts';
 
 interface Props {
 	title: string;
 	description: string;
 	image?: string;
+	canonical?: string;
+	noindex?: boolean;
 }
 
-const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-
-const { title, description, image = '/blog-placeholder-1.jpg' } = Astro.props;
+const {
+	title,
+	description,
+	image = '/blog-placeholder-1.jpg',
+	canonical,
+	noindex = false,
+} = Astro.props;
+const siteURL = Astro.site ?? new URL(SITE_URL);
+const canonicalURL = new URL(canonical ?? Astro.url.pathname, siteURL);
+const socialImageURL = new URL(image, siteURL);
+const robotsContent = noindex
+	? 'noindex, nofollow'
+	: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
 ---
 
 <!-- Global Metadata -->
@@ -19,6 +32,10 @@ const { title, description, image = '/blog-placeholder-1.jpg' } = Astro.props;
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <meta name="generator" content={Astro.generator} />
+<meta name="robots" content={robotsContent} />
+<meta name="googlebot" content={robotsContent} />
+<meta name="theme-color" content="#14233c" />
+<meta name="author" content="Hyoka" />
 
 <!-- Font preloads -->
 <link rel="preload" href="/fonts/atkinson-regular.woff" as="font" type="font/woff" crossorigin />
@@ -34,14 +51,17 @@ const { title, description, image = '/blog-placeholder-1.jpg' } = Astro.props;
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website" />
-<meta property="og:url" content={Astro.url} />
+<meta property="og:site_name" content={SITE_TITLE} />
+<meta property="og:locale" content="en_GB" />
+<meta property="og:url" content={canonicalURL} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
-<meta property="og:image" content={new URL(image, Astro.url)} />
+<meta property="og:image" content={socialImageURL} />
+<meta property="og:image:alt" content={title} />
 
 <!-- Twitter -->
-<meta property="twitter:card" content="summary_large_image" />
-<meta property="twitter:url" content={Astro.url} />
-<meta property="twitter:title" content={title} />
-<meta property="twitter:description" content={description} />
-<meta property="twitter:image" content={new URL(image, Astro.url)} />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:url" content={canonicalURL} />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={socialImageURL} />
